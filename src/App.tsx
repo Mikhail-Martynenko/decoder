@@ -1,26 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {validate} from "class-validator";
+
+import {reservationJSON} from "./json/reservation";
+import {BookingRequest} from "./decorators/reservation-decorator";
+import {fullInfo} from "./json/full-info";
+import {FullInfoDecoder} from "./decorators/full-info-decorator";
+import {buildings} from "./json/buildings";
+import {OfficeLocation, OfficeLocationsResponse} from "./decorators/buildings-decorator";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const bookingRequest = new BookingRequest(reservationJSON);
+
+    const fullInfoDecoder = new FullInfoDecoder(fullInfo);
+    const officeLocations = new OfficeLocation(buildings.rows[0])
+
+    validate(officeLocations).then(errors => {
+        if (errors.length > 0) {
+            console.log('validation failed. errors: ', errors);
+        } else {
+            console.log('validation succeed');
+        }
+    });
+
+    return (
+        <div className="App">
+            <h1>Check console</h1>
+        </div>
+    );
 }
 
 export default App;
